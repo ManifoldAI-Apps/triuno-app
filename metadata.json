@@ -1,0 +1,8 @@
+{
+  "name": "Triuno Life Management",
+  "description": "Uma plataforma de ascensão pessoal focada no equilíbrio entre Corpo, Alma e Espírito através de missões diárias, gratidão e ranking comunitário.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
