@@ -59,24 +59,7 @@ const App: React.FC = () => {
     const saved = localStorage.getItem('triuno_db_users');
     let db = saved ? JSON.parse(saved) : [];
 
-    if (!db.some((u: User) => u.email === 'teste@triuno.com')) {
-      db.push({
-        id: 'u-test',
-        name: 'Buscador de Teste',
-        email: 'teste@triuno.com',
-        password: '123456',
-        level: 5,
-        xp: 40,
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
-        status: 'Ativo',
-        role: 'User',
-        connections: [],
-        pendingRequests: [],
-        sentRequests: [],
-        hasAcceptedCommitment: true,
-        isVerified: true
-      });
-    }
+
 
     if (!db.some((u: User) => u.email === 'admin@triuno.com')) {
       db.push({
