@@ -148,6 +148,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, profile, stats, onBack,
             <div className="text-center p-4 rounded-3xl bg-aurora-gold/10 border border-aurora-gold/20">
               <p className="text-[10px] font-black uppercase tracking-widest text-aurora-gold">Aceite nas notificações para ecoar.</p>
             </div>
+          ) : profile.role === 'Admin' ? (
+            <button
+              disabled
+              className="w-full py-5 rounded-[28px] font-black text-[11px] uppercase tracking-[0.3em] bg-white/5 border border-white/10 text-white opacity-40 cursor-not-allowed flex items-center justify-center gap-3"
+            >
+              <span className="material-symbols-outlined text-xl">shield</span>
+              Guardião Mor
+            </button>
           ) : (
             <button
               onClick={() => !isRequestSent && onRequestConnection(profile.id)}

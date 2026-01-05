@@ -229,7 +229,7 @@ const Journey: React.FC<JourneyProps> = ({ setView, user, tasks, onLogout, onUpd
 
       <section className="px-6 space-y-4 relative z-10">
         <div className="grid grid-cols-2 gap-3">
-          <div className="glass-panel p-4 rounded-3xl text-center border-white/5">
+          <div onClick={() => setView(View.MESSAGES)} className="glass-panel p-4 rounded-3xl text-center border-white/5 cursor-pointer hover:bg-white/5 transition-all active:scale-95">
             <p className="text-[10px] font-black text-text-secondary uppercase mb-1 tracking-widest">Conexões</p>
             <p className="text-xl font-bold text-white">{(user.connections || []).length}</p>
           </div>

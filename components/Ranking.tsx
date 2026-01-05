@@ -15,6 +15,7 @@ const Ranking: React.FC<RankingProps> = ({ setView, userXP, onUserClick, registe
   // Ordenar usuários por XP e aplicar busca
   const sortedAndFilteredUsers = registeredUsers
     .filter(u => u.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(u => u.role !== 'Admin') // Hide Admins
     .sort((a, b) => {
       const powerA = (a.xp || 0) + ((a.level || 0) * 100);
       const powerB = (b.xp || 0) + ((b.level || 0) * 100);
