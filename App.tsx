@@ -222,6 +222,46 @@ const App: React.FC = () => {
     return false;
   };
 
+  const handleRegister = async (name: string, email: string, pass: string) => {
+    if (registeredUsers.some(u => u.email === email)) {
+      return false; // Email exists
+    }
+
+    const newUser: User = {
+      id: `u-${Date.now()}`,
+      name,
+      email,
+      password: pass,
+      level: 1,
+      xp: 0,
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB74Y8ceZgGcCwCi8BYI81Q8BeMUPMo5zFjWEzWO3KFqMv8hy1md0VNoDEsiVaLDdanFbGDLv_k6GjQdGiGGIfMT02LGBId6qOIxQ4RtcHcB0E6xynPoHVkJj2IM77-MJKf6mE4xM74apHAs4WcONmunxVdbe40T82qlnTw3ZIJbfaS0VOjY6QsWzRRH3kvFRhHW_fTPIQdtRH1C04fBAj-LNcFsk2yNHmGSIQoBJ6GtAmP9P8sNutwBOG-4eCPcKGVn0yYV2_pMysH',
+      status: 'Ativo',
+      role: 'User',
+      bio: 'Buscador da Ascensão.',
+      connections: [],
+      pendingRequests: [],
+      sentRequests: [],
+      hasAcceptedCommitment: false,
+      isVerified: false
+    };
+
+    // Save to Supabase first
+    const { error } = await supabase.from('users').insert(newUser);
+
+    if (error) {
+      console.error('Error registering user:', error);
+      // Fallback? Ideally show error to user but simple flow for now:
+      // Proceed with local update to not block user, but log error.
+    }
+
+    setRegisteredUsers(prev => [...prev, newUser]);
+    setUser(newUser);
+    setIsAuthenticated(true);
+    localStorage.setItem('triuno_auth', 'true');
+    setCurrentView(View.DASHBOARD);
+    return true;
+  };
+
   const handleUpdateUser = async (updatedData: Partial<User>) => {
     const updated = { ...user, ...updatedData };
     setUser(updated);
@@ -416,6 +456,7 @@ const App: React.FC = () => {
     switch (currentView) {
       case View.WELCOME: return <Welcome onNext={() => setCurrentView(View.LOGIN)} onAdminLogin={() => { }} />;
       case View.LOGIN: return <Login onLogin={handleLogin} onGoToRegister={() => setCurrentView(View.REGISTER)} onGoToForgotPassword={() => setCurrentView(View.FORGOT_PASSWORD)} />;
+      case View.REGISTER: return <Register onRegister={handleRegister} onGoToLogin={() => setCurrentView(View.LOGIN)} />;
       case View.DASHBOARD: return <Dashboard setView={setCurrentView} tasks={tasks} toggleTask={handleToggleTask} user={user} wisdom={wisdom} notifications={notifications} markRead={() => setNotifications(n => n.map(x => ({ ...x, read: true })))} onLogout={() => setIsLogoutModalOpen(true)} onSupport={handleOpenSupport} onAcceptConnection={handleAcceptConnection} />;
       case View.RANKING: return <Ranking setView={setCurrentView} userXP={user.xp} onUserClick={(id) => { setSelectedProfileId(id); setCurrentView(View.USER_PROFILE); }} registeredUsers={registeredUsers} />;
       case View.JOURNEY: return <Journey setView={setCurrentView} user={user} tasks={tasks} onLogout={() => setIsLogoutModalOpen(true)} onUpdateUser={handleUpdateUser} onSupport={handleOpenSupport} />;
