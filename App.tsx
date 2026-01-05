@@ -55,70 +55,22 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : getInitialUser();
   });
 
-  const [registeredUsers, setRegisteredUsers] = useState<User[]>(() => {
-    const saved = localStorage.getItem('triuno_db_users');
-    let db = saved ? JSON.parse(saved) : [];
+  const [registeredUsers, setRegisteredUsers] = useState<User[]>([]);
 
 
 
-    if (!db.some((u: User) => u.email === 'admin@triuno.com')) {
-      db.push({
-        id: 'u-admin',
-        name: 'Guardião Mor',
-        email: 'admin@triuno.com',
-        password: 'admin123',
-        level: 99,
-        xp: 0,
-        avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCy27OZRVPYL9uLDgzs8XFelX0f7WyvaF6fP5w5zXYZiKuFIgpr0tPEJEx88kHpLbvlfcXybO6dq6AguVjQiCvybvkO6np1ey2qPISQj11Jh36s-dJqSgJtuhkrCnl8Mgcx9o1tY-0t5sWaDjP6YxwYLjQ_z-bKLPDtbQJrEWBa1xEELWHt1cKgc2B8rvktpKQtLMem7sbdiFgpJkKy6eRPv4pkYNaxmGeVlZ8gOhMFIU9hpJHPxUYcDOFpvP8bDQQ0I2V1O6ROQtCE',
-        status: 'Ativo',
-        role: 'Admin',
-        bio: 'O arquiteto da Senda Triuna.',
-        connections: [],
-        pendingRequests: [],
-        sentRequests: [],
-        hasAcceptedCommitment: true,
-        isVerified: true
-      });
-    }
-    return db;
-  });
-
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    const saved = localStorage.getItem('triuno_messages');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('triuno_tasks');
-    return saved ? JSON.parse(saved) : INITIAL_TASKS;
-  });
-
-  const [gratitudePosts, setGratitudePosts] = useState<GratitudePost[]>(() => {
-    const saved = localStorage.getItem('triuno_gratitude');
-    return saved ? JSON.parse(saved) : GRATITUDE_FEED;
-  });
-
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [gratitudePosts, setGratitudePosts] = useState<GratitudePost[]>([]);
   const [likedPosts, setLikedPosts] = useState<string[]>(() => {
     const saved = localStorage.getItem('triuno_liked_posts');
     return saved ? JSON.parse(saved) : [];
   });
-
-  const [notifications, setNotifications] = useState<AppNotification[]>(() => {
-    const saved = localStorage.getItem('triuno_notifications');
-    let data: AppNotification[] = saved ? JSON.parse(saved) : [];
-    const now = Date.now();
-    return data.filter(n => (now - n.timestamp) < (24 * 60 * 60 * 1000));
-  });
-
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [wisdom, setWisdom] = useState<string>(() => {
     return localStorage.getItem('triuno_wisdom') || "O equilíbrio é a chave para a ascensão plena.";
   });
-
-  const [events, setEvents] = useState<AppEvent[]>(() => {
-    const saved = localStorage.getItem('triuno_events');
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  const [events, setEvents] = useState<AppEvent[]>([]);
   const [attendedEvents, setAttendedEvents] = useState<string[]>(() => {
     const saved = localStorage.getItem('triuno_attended_events');
     return saved ? JSON.parse(saved) : [];
@@ -147,6 +99,24 @@ const App: React.FC = () => {
     }
     const timer = setTimeout(() => setLoading(false), 1200);
     return () => clearTimeout(timer);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Cleanup Legacy Mock Data (One-time run)
+  useEffect(() => {
+    const CLEANUP_VERSION = 'v1.1';
+    const currentVersion = localStorage.getItem('triuno_cleanup_version');
+
+    if (currentVersion !== CLEANUP_VERSION) {
+      console.log('Cleaning up legacy mock data...');
+      // Clear specific keys known to have mock data
+      localStorage.removeItem('triuno_gratitude'); // Clears old 'Rio da Luz' feeds
+      // We don't clear users to not kill the session, but we refresh from DB below.
+
+      localStorage.setItem('triuno_cleanup_version', CLEANUP_VERSION);
+      // Force reload state for gratitude
+      setGratitudePosts([]);
+    }
   }, []);
 
   // Supabase Synchronization
@@ -155,46 +125,68 @@ const App: React.FC = () => {
       // 1. Sync Users
       const { data: dbUsers } = await supabase.from('users').select('*');
       if (dbUsers && dbUsers.length > 0) {
-        setRegisteredUsers(current => {
-          // Merge strategy: use DB as truth, but keeps local if DB fails? 
-          // Here we overwrite with DB data if present, assuming DB is master.
-          // However, to prevent overwriting with old data if local has unsaved changes... 
-          // For this simple app, we'll assume DB is master on load.
-          return dbUsers as User[];
-        });
-      }
+        // 1. Sync Users & Seed Admin
+        const { data: dbUsers } = await supabase.from('users').select('*');
+        let currentUsers = (dbUsers as User[]) || [];
 
-      // 2. Sync Gratitude (Feed is shared)
-      const { data: dbPosts } = await supabase.from('gratitudePosts').select('*').order('createdAt', { ascending: false });
-      if (dbPosts && dbPosts.length > 0) {
-        setGratitudePosts(dbPosts as GratitudePost[]);
-      }
+        // Check for Admin and Seed if missing
+        const adminExists = currentUsers.some(u => u.email === 'admin@triuno.com');
+        if (!adminExists) {
+          const adminUser: User = {
+            id: 'u-admin',
+            name: 'Guardião Mor',
+            email: 'admin@triuno.com',
+            password: 'admin123',
+            level: 99,
+            xp: 0,
+            avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCy27OZRVPYL9uLDgzs8XFelX0f7WyvaF6fP5w5zXYZiKuFIgpr0tPEJEx88kHpLbvlfcXybO6dq6AguVjQiCvybvkO6np1ey2qPISQj11Jh36s-dJqSgJtuhkrCnl8Mgcx9o1tY-0t5sWaDjP6YxwYLjQ_z-bKLPDtbQJrEWBa1xEELWHt1cKgc2B8rvktpKQtLMem7sbdiFgpJkKy6eRPv4pkYNaxmGeVlZ8gOhMFIU9hpJHPxUYcDOFpvP8bDQQ0I2V1O6ROQtCE',
+            status: 'Ativo',
+            role: 'Admin',
+            bio: 'O arquiteto da Senda Triuna.',
+            connections: [],
+            pendingRequests: [],
+            sentRequests: [],
+            hasAcceptedCommitment: true,
+            isVerified: true
+          };
 
-      // 3. Sync Tasks (Personal)
-      // We need to fetch tasks only if we have a user? Or fetch all for admin?
-      // Current app loads tasks globally from 'triuno_tasks'. We will try to fetch tasks.
-      const { data: dbTasks } = await supabase.from('tasks').select('*');
-      if (dbTasks && dbTasks.length > 0) {
-        setTasks(dbTasks as Task[]);
-      }
+          await supabase.from('users').insert(adminUser);
+          currentUsers.push(adminUser);
+        }
 
-      // 4. Sync Events
-      const { data: dbEvents } = await supabase.from('events').select('*');
-      if (dbEvents && dbEvents.length > 0) {
-        setEvents(dbEvents as AppEvent[]);
-      }
+        setRegisteredUsers(currentUsers);
 
-      // 5. Sync Messages
-      const { data: dbMessages } = await supabase.from('messages').select('*');
-      if (dbMessages && dbMessages.length > 0) {
-        setMessages(dbMessages as ChatMessage[]);
-      }
-    };
+        // 2. Sync Gratitude (Feed is shared)
+        const { data: dbPosts } = await supabase.from('gratitudePosts').select('*').order('createdAt', { ascending: false });
+        if (dbPosts && dbPosts.length > 0) {
+          setGratitudePosts(dbPosts as GratitudePost[]);
+        }
 
-    if (import.meta.env.VITE_SUPABASE_URL) {
-      syncData();
-    }
-  }, []); // Run on mount
+        // 3. Sync Tasks (Personal)
+        // We need to fetch tasks only if we have a user? Or fetch all for admin?
+        // Current app loads tasks globally from 'triuno_tasks'. We will try to fetch tasks.
+        const { data: dbTasks } = await supabase.from('tasks').select('*');
+        if (dbTasks && dbTasks.length > 0) {
+          setTasks(dbTasks as Task[]);
+        }
+
+        // 4. Sync Events
+        const { data: dbEvents } = await supabase.from('events').select('*');
+        if (dbEvents && dbEvents.length > 0) {
+          setEvents(dbEvents as AppEvent[]);
+        }
+
+        // 5. Sync Messages
+        const { data: dbMessages } = await supabase.from('messages').select('*');
+        if (dbMessages && dbMessages.length > 0) {
+          setMessages(dbMessages as ChatMessage[]);
+        }
+      };
+
+      if (import.meta.env.VITE_SUPABASE_URL) {
+        syncData();
+      }
+    }, []); // Run on mount
 
   // Subscribe to realtime updates for Feed (Optional but nice)
   useEffect(() => {
