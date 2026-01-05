@@ -88,10 +88,10 @@ const Journey: React.FC<JourneyProps> = ({ setView, user, tasks, onLogout, onUpd
     city: user.city || '',
     state: user.state || ''
   });
-  
+
   const handleSave = () => {
-    onUpdateUser({ 
-      name: formData.name.trim() || user.name, 
+    onUpdateUser({
+      name: formData.name.trim() || user.name,
       avatar: formData.avatar.trim() || user.avatar,
       bio: formData.bio.trim(),
       city: formData.city.trim(),
@@ -117,7 +117,7 @@ const Journey: React.FC<JourneyProps> = ({ setView, user, tasks, onLogout, onUpd
           <button onClick={onSupport} className="flex size-10 items-center justify-center rounded-2xl glass-panel text-aurora-gold border-aurora-gold/20 active:scale-90 transition-all">
             <span className="material-symbols-outlined text-[20px]">help</span>
           </button>
-          <button 
+          <button
             onMouseDown={() => isEditing ? handleSave() : setIsEditing(true)}
             className={`flex items-center justify-center w-10 h-10 rounded-2xl border transition-all active:scale-90 ${isEditing ? 'bg-aurora-blue text-white border-aurora-blue shadow-glow-blue' : 'glass-panel border-white/10 text-white'}`}
           >
@@ -130,20 +130,20 @@ const Journey: React.FC<JourneyProps> = ({ setView, user, tasks, onLogout, onUpd
         <div className="relative mb-6">
           <div className="absolute inset-0 bg-aurora-blue/20 blur-[60px] rounded-full animate-pulse"></div>
           <div className="size-32 rounded-[40px] border-2 border-white/10 shadow-2xl relative z-10 overflow-hidden bg-slate-900 group">
-            <img 
-              src={isEditing ? formData.avatar : user.avatar} 
-              alt={user.name} 
-              className="w-full h-full object-cover transition-all duration-500" 
+            <img
+              src={isEditing ? formData.avatar : user.avatar}
+              alt={user.name}
+              className="w-full h-full object-cover transition-all duration-500"
               onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Buscador'; }}
             />
             {isEditing && (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px]">
-                 <span className="material-symbols-outlined text-white text-3xl animate-pulse">add_a_photo</span>
+                <span className="material-symbols-outlined text-white text-3xl animate-pulse">add_a_photo</span>
               </div>
             )}
           </div>
         </div>
-        
+
         {isEditing ? (
           <div className="w-full flex flex-col gap-6 animate-fade-in max-w-sm">
             {/* Gallery of Avatars */}
@@ -151,9 +151,9 @@ const Journey: React.FC<JourneyProps> = ({ setView, user, tasks, onLogout, onUpd
               <label className="text-[10px] font-black uppercase text-text-secondary pl-2 tracking-widest">Escolha sua Essência Visual</label>
               <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar px-1">
                 {PREDEFINED_AVATARS.map((url, idx) => (
-                  <button 
+                  <button
                     key={idx}
-                    onClick={() => setFormData({...formData, avatar: url})}
+                    onClick={() => setFormData({ ...formData, avatar: url })}
                     className={`size-14 rounded-2xl overflow-hidden shrink-0 border-2 transition-all active:scale-90 ${formData.avatar === url ? 'border-aurora-blue shadow-glow-blue' : 'border-white/10 opacity-50'}`}
                   >
                     <img src={url} className="size-full object-cover" alt={`Avatar ${idx}`} />
@@ -164,27 +164,46 @@ const Journey: React.FC<JourneyProps> = ({ setView, user, tasks, onLogout, onUpd
 
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-black uppercase text-text-secondary pl-2">Ou cole um Link de Imagem</label>
-              <input value={formData.avatar} onChange={e => setFormData({...formData, avatar: e.target.value})} className="w-full glass-panel bg-white/5 px-4 h-12 rounded-xl text-white outline-none focus:ring-1 focus:ring-aurora-blue/40 transition-all text-xs" placeholder="https://exemplo.com/sua-foto.jpg" />
+              <div className="flex gap-2">
+                <input value={formData.avatar} onChange={e => setFormData({ ...formData, avatar: e.target.value })} className="w-full glass-panel bg-white/5 px-4 h-12 rounded-xl text-white outline-none focus:ring-1 focus:ring-aurora-blue/40 transition-all text-xs" placeholder="https://exemplo.com/sua-foto.jpg" />
+                <label className="flex items-center justify-center w-12 h-12 rounded-xl glass-panel border-white/10 cursor-pointer hover:bg-white/10 active:scale-95 transition-all">
+                  <span className="material-symbols-outlined text-white">upload</span>
+                  <input type="file" className="hidden" accept="image/*" onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 500 * 1024) { // 500KB limit for Base64 safety
+                        alert("A imagem deve ter no máximo 500KB.");
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setFormData({ ...formData, avatar: reader.result as string });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }} />
+                </label>
+              </div>
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-black uppercase text-text-secondary pl-2">Nome de Luz</label>
-              <input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full glass-panel bg-white/5 px-4 h-12 rounded-xl text-white outline-none focus:ring-1 focus:ring-aurora-blue/40 transition-all" />
+              <input value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full glass-panel bg-white/5 px-4 h-12 rounded-xl text-white outline-none focus:ring-1 focus:ring-aurora-blue/40 transition-all" />
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-black uppercase text-text-secondary pl-2">Sua Missão (Bio)</label>
-              <textarea value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} className="w-full glass-panel bg-white/5 p-4 rounded-xl text-white outline-none focus:ring-1 focus:ring-aurora-blue/40 min-h-[100px] resize-none transition-all" placeholder="Qual sua missão neste plano?" />
+              <textarea value={formData.bio} onChange={e => setFormData({ ...formData, bio: e.target.value })} className="w-full glass-panel bg-white/5 p-4 rounded-xl text-white outline-none focus:ring-1 focus:ring-aurora-blue/40 min-h-[100px] resize-none transition-all" placeholder="Qual sua missão neste plano?" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] font-black uppercase text-text-secondary pl-2">Cidade</label>
-                <input value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} className="w-full glass-panel bg-white/5 px-4 h-12 rounded-xl text-white outline-none transition-all" placeholder="Ex: São Paulo" />
+                <input value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} className="w-full glass-panel bg-white/5 px-4 h-12 rounded-xl text-white outline-none transition-all" placeholder="Ex: São Paulo" />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] font-black uppercase text-text-secondary pl-2">UF</label>
-                <input maxLength={2} value={formData.state} onChange={e => setFormData({...formData, state: e.target.value})} className="w-full glass-panel bg-white/5 px-4 h-12 rounded-xl text-white outline-none uppercase transition-all" placeholder="SP" />
+                <input maxLength={2} value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })} className="w-full glass-panel bg-white/5 px-4 h-12 rounded-xl text-white outline-none uppercase transition-all" placeholder="SP" />
               </div>
             </div>
           </div>
@@ -192,8 +211,8 @@ const Journey: React.FC<JourneyProps> = ({ setView, user, tasks, onLogout, onUpd
           <div className="text-center flex flex-col items-center">
             <h2 className="text-2xl font-black uppercase tracking-tight">{user.name}</h2>
             <div className="flex items-center gap-2 mt-1 opacity-60">
-               <span className="material-symbols-outlined text-xs">location_on</span>
-               <span className="text-[10px] font-bold uppercase tracking-widest">{user.city || 'Desconhecido'}, {user.state || 'UF'}</span>
+              <span className="material-symbols-outlined text-xs">location_on</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest">{user.city || 'Desconhecido'}, {user.state || 'UF'}</span>
             </div>
             {user.bio && <p className="mt-4 text-text-secondary italic font-serif text-lg leading-relaxed max-w-[80%]">"{user.bio}"</p>}
           </div>
@@ -219,7 +238,7 @@ const Journey: React.FC<JourneyProps> = ({ setView, user, tasks, onLogout, onUpd
             <p className="text-xl font-bold text-aurora-gold">{user.level}</p>
           </div>
         </div>
-        
+
         <button onClick={onLogout} className="w-full py-5 rounded-[28px] border border-aurora-orange/20 bg-aurora-orange/5 text-aurora-orange flex items-center justify-center gap-3 active:scale-95 transition-all shadow-lg hover:bg-aurora-orange/10">
           <span className="material-symbols-outlined">logout</span>
           <span className="text-xs font-black uppercase tracking-[0.2em]">Sair do Portal</span>

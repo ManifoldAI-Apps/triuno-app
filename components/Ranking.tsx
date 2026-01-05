@@ -15,7 +15,11 @@ const Ranking: React.FC<RankingProps> = ({ setView, userXP, onUserClick, registe
   // Ordenar usuários por XP e aplicar busca
   const sortedAndFilteredUsers = registeredUsers
     .filter(u => u.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a, b) => (b.xp + (b.level * 100)) - (a.xp + (a.level * 100)));
+    .sort((a, b) => {
+      const powerA = (a.xp || 0) + ((a.level || 0) * 100);
+      const powerB = (b.xp || 0) + ((b.level || 0) * 100);
+      return powerB - powerA;
+    });
 
   const topThree = sortedAndFilteredUsers.slice(0, 3);
   const restOfUsers = sortedAndFilteredUsers.slice(3);
@@ -23,27 +27,27 @@ const Ranking: React.FC<RankingProps> = ({ setView, userXP, onUserClick, registe
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col pb-48 z-10 bg-deep-void overflow-x-hidden">
       <div className="fixed top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-blue-900/10 to-transparent pointer-events-none z-0"></div>
-      
-      <header className="sticky top-0 z-50 glass-panel !bg-deep-void/60 backdrop-blur-xl border-b border-white/5 p-6 md:px-12 pt-8 pb-4 flex flex-col gap-6">
-          <div className="flex items-center justify-between">
-            <button onClick={() => setView(View.DASHBOARD)} className="flex size-10 items-center justify-center rounded-2xl glass-panel text-white active:scale-90 transition-all border-white/10">
-              <span className="material-symbols-outlined">arrow_back</span>
-            </button>
-            <h1 className="text-xs font-black tracking-[0.3em] uppercase opacity-60">Hall da Ascensão</h1>
-            <div className="size-10"></div>
-          </div>
 
-          <div className="flex w-full items-center rounded-2xl glass-panel bg-white/5 border border-white/10 h-14 transition-all focus-within:ring-2 ring-aurora-gold/40">
-            <div className="pl-4 pr-3 text-text-secondary">
-              <span className="material-symbols-outlined text-[22px]">search</span>
-            </div>
-            <input 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex w-full bg-transparent border-none focus:ring-0 text-text-primary placeholder:text-slate-600 text-[11px] font-black uppercase tracking-widest" 
-              placeholder="Buscar buscador pelo nome..." 
-            />
+      <header className="sticky top-0 z-50 glass-panel !bg-deep-void/60 backdrop-blur-xl border-b border-white/5 p-6 md:px-12 pt-8 pb-4 flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <button onClick={() => setView(View.DASHBOARD)} className="flex size-10 items-center justify-center rounded-2xl glass-panel text-white active:scale-90 transition-all border-white/10">
+            <span className="material-symbols-outlined">arrow_back</span>
+          </button>
+          <h1 className="text-xs font-black tracking-[0.3em] uppercase opacity-60">Hall da Ascensão</h1>
+          <div className="size-10"></div>
+        </div>
+
+        <div className="flex w-full items-center rounded-2xl glass-panel bg-white/5 border border-white/10 h-14 transition-all focus-within:ring-2 ring-aurora-gold/40">
+          <div className="pl-4 pr-3 text-text-secondary">
+            <span className="material-symbols-outlined text-[22px]">search</span>
           </div>
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex w-full bg-transparent border-none focus:ring-0 text-text-primary placeholder:text-slate-600 text-[11px] font-black uppercase tracking-widest"
+            placeholder="Buscar buscador pelo nome..."
+          />
+        </div>
       </header>
 
       <main className="flex-1 w-full max-w-4xl mx-auto z-10 px-6 py-6">
@@ -100,8 +104,8 @@ const Ranking: React.FC<RankingProps> = ({ setView, userXP, onUserClick, registe
             {/* List (Remaining Users) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-12">
               {restOfUsers.map((user, idx) => (
-                <div 
-                  key={user.id} 
+                <div
+                  key={user.id}
                   onClick={() => onUserClick(user.id)}
                   className="glass-panel group flex items-center gap-4 p-5 rounded-[32px] hover:bg-white/5 active:scale-95 transition-all shadow-lg cursor-pointer border-white/5"
                 >
