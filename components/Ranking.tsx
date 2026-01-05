@@ -77,7 +77,9 @@ const Ranking: React.FC<RankingProps> = ({ setView, userXP, onUserClick, registe
                 {/* 1st Place */}
                 <div onClick={() => onUserClick(topThree[0].id)} className="flex flex-col items-center gap-4 cursor-pointer group active:scale-95 transition-all -translate-y-4">
                   <div className="relative">
-                    <span className="absolute -top-10 left-1/2 -translate-x-1/2 material-symbols-outlined text-aurora-gold text-4xl animate-bounce" style={{ fontVariationSettings: "'FILL' 1" }}>crown</span>
+                    <div className="absolute -top-10 left-0 w-full flex justify-center">
+                      <span className="material-symbols-outlined text-aurora-gold text-4xl animate-bounce" style={{ fontVariationSettings: "'FILL' 1" }}>crown</span>
+                    </div>
                     <div className="size-28 rounded-[44px] border-4 border-aurora-gold p-1 bg-slate-900 shadow-glow-orange overflow-hidden">
                       <img className="w-full h-full object-cover rounded-[38px] transition-transform duration-700 group-hover:scale-110" src={topThree[0].avatar} alt={topThree[0].name} />
                     </div>

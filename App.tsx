@@ -452,12 +452,12 @@ const App: React.FC = () => {
   const renderView = () => {
     if (user.role === 'Admin' && isAuthenticated) {
       switch (currentView) {
-        case View.ADMIN_DASHBOARD: return <AdminDashboard setView={setCurrentView} totalGratitude={gratitudePosts.length} onLogout={() => setIsLogoutModalOpen(true)} />;
+        case View.ADMIN_DASHBOARD: return <AdminDashboard setView={setCurrentView} totalGratitude={gratitudePosts.length} onLogout={() => setIsLogoutModalOpen(true)} user={user} />;
         case View.ADMIN_USERS: return <AdminUsers onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} registeredUsers={registeredUsers} />;
         case View.ADMIN_WISDOM: return <AdminWisdom onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} onSave={(w) => { setWisdom(w); setCurrentView(View.ADMIN_DASHBOARD); }} />;
         case View.ADMIN_FORGE: return <AdminForge onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} tasks={tasks} onUpdateTasks={setTasks} />;
         case View.ADMIN_CALENDAR: return <AdminCalendar onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} onAdd={(ev) => { setEvents(prev => [...prev, ev]); setCurrentView(View.ADMIN_DASHBOARD); }} />;
-        default: return <AdminDashboard setView={setCurrentView} totalGratitude={gratitudePosts.length} onLogout={() => setIsLogoutModalOpen(true)} />;
+        default: return <AdminDashboard setView={setCurrentView} totalGratitude={gratitudePosts.length} onLogout={() => setIsLogoutModalOpen(true)} user={user} />;
       }
     }
 

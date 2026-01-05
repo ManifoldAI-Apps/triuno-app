@@ -1,18 +1,20 @@
 
 import React from 'react';
-import { View } from '../types';
+import { View, User } from '../types';
 
 interface AdminDashboardProps {
   setView: (view: View) => void;
   totalGratitude: number;
   onLogout: () => void;
+  user: User;
 }
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ setView, totalGratitude, onLogout }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ setView, totalGratitude, onLogout, user }) => {
+  // Stats now use placeholders for non-implemented metrics instead of fake values
   const stats = [
     { label: 'Gratidão', val: totalGratitude, icon: 'volunteer_activism', color: 'text-aurora-gold', badge: 'Real' },
-    { label: 'Pulsos', val: '12', icon: 'bolt', color: 'text-aurora-blue', badge: 'Hoje' },
-    { label: 'Média', val: '9.2', icon: 'favorite', color: 'text-pink-400', badge: 'Satisfação' }
+    { label: 'Pulsos', val: '0', icon: 'bolt', color: 'text-aurora-blue', badge: 'Hoje' },
+    { label: 'Média', val: '-', icon: 'favorite', color: 'text-pink-400', badge: 'Satisfação' }
   ];
 
   return (
@@ -23,7 +25,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ setView, totalGratitude
             <span className="material-symbols-outlined text-aurora-blue text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>shield_person</span>
           </div>
         </div>
-        
+
         <div className="flex flex-col gap-8 w-full items-center flex-1 justify-center">
           <button onClick={() => setView(View.ADMIN_DASHBOARD)} className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 text-white shadow-glow-blue border border-white/10 active:scale-90 transition-all">
             <span className="material-symbols-outlined">dashboard</span>
@@ -48,11 +50,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ setView, totalGratitude
         <header className="mb-10">
           <div className="glass-panel rounded-[32px] px-8 py-5 flex items-center justify-between shadow-2xl border-white/5 bg-gradient-to-r from-slate-800 to-transparent">
             <div>
-              <h1 className="text-xs font-black tracking-[0.3em] text-aurora-blue uppercase">Guardião Mor</h1>
+              <h1 className="text-xs font-black tracking-[0.3em] text-aurora-blue uppercase">{user.name}</h1>
               <p className="text-text-secondary text-[8px] font-bold uppercase tracking-[0.2em] opacity-40">Painel de Controle</p>
             </div>
             <div className="size-10 rounded-2xl ring-1 ring-aurora-blue/20 overflow-hidden shadow-xl">
-              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCy27OZRVPYL9uLDgzs8XFelX0f7WyvaF6fP5w5zXYZiKuFIgpr0tPEJEx88kHpLbvlfcXybO6dq6AguVjQiCvybvkO6np1ey2qPISQj11Jh36s-dJqSgJtuhkrCnl8Mgcx9o1tY-0t5sWaDjP6YxwYLjQ_z-bKLPDtbQJrEWBa1xEELWHt1cKgc2B8rvktpKQtLMem7sbdiFgpJkKy6eRPv4pkYNaxmGeVlZ8gOhMFIU9hpJHPxUYcDOFpvP8bDQQ0I2V1O6ROQtCE" className="object-cover w-full h-full" alt="Avatar" />
+              <img src={user.avatar} className="object-cover w-full h-full" alt="Avatar" />
             </div>
           </div>
         </header>
