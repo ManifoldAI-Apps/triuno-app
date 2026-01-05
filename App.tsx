@@ -465,7 +465,7 @@ const App: React.FC = () => {
       case View.LOGIN: return <Login onLogin={handleLogin} onGoToRegister={() => setCurrentView(View.REGISTER)} onGoToForgotPassword={() => setCurrentView(View.FORGOT_PASSWORD)} />;
       case View.REGISTER: return <Register onRegister={handleRegister} onGoToLogin={() => setCurrentView(View.LOGIN)} />;
       case View.COMMITMENT: return <Commitment user={user} onNext={handleCommitmentAccepted} />;
-      case View.DASHBOARD: return <Dashboard setView={setCurrentView} tasks={tasks} toggleTask={handleToggleTask} user={user} wisdom={wisdom} notifications={notifications} markRead={() => setNotifications(n => n.map(x => ({ ...x, read: true })))} onLogout={() => setIsLogoutModalOpen(true)} onSupport={handleOpenSupport} onAcceptConnection={handleAcceptConnection} />;
+      case View.DASHBOARD: return <Dashboard setView={setCurrentView} tasks={tasks} toggleTask={handleToggleTask} user={user} wisdom={wisdom} notifications={notifications} markRead={() => setNotifications(n => n.map(x => ({ ...x, read: true })))} onLogout={() => setIsLogoutModalOpen(true)} onSupport={handleOpenSupport} onAcceptConnection={handleAcceptConnection} unreadMessages={unreadMessagesCount} />;
       case View.RANKING: return <Ranking setView={setCurrentView} userXP={user.xp} onUserClick={(id) => { setSelectedProfileId(id); setCurrentView(View.USER_PROFILE); }} registeredUsers={registeredUsers} />;
       case View.JOURNEY: return <Journey setView={setCurrentView} user={user} tasks={tasks} onLogout={() => setIsLogoutModalOpen(true)} onUpdateUser={handleUpdateUser} onSupport={handleOpenSupport} />;
       case View.ACHIEVEMENTS: return <Achievements user={user} setView={setCurrentView} />;
@@ -504,7 +504,7 @@ const App: React.FC = () => {
         return <UserProfile user={user} profile={profile!} stats={stats} onBack={() => setCurrentView(View.RANKING)} onRequestConnection={handleRequestConnection} onMessage={(id) => { setSelectedProfileId(id); setCurrentView(View.MESSAGES); }} />;
       case View.MESSAGES:
         return <DirectMessages user={user} initialContactId={selectedProfileId} registeredUsers={registeredUsers} messages={messages} onSendMessage={sendMessage} onBack={() => setCurrentView(View.DASHBOARD)} />;
-      default: return <Dashboard setView={setCurrentView} tasks={tasks} toggleTask={() => { }} user={user} wisdom={wisdom} notifications={notifications} markRead={() => { }} onLogout={() => { }} onSupport={handleOpenSupport} onAcceptConnection={handleAcceptConnection} />;
+      default: return <Dashboard setView={setCurrentView} tasks={tasks} toggleTask={() => { }} user={user} wisdom={wisdom} notifications={notifications} markRead={() => { }} onLogout={() => { }} onSupport={handleOpenSupport} onAcceptConnection={handleAcceptConnection} unreadMessages={unreadMessagesCount} />;
     }
   };
 
@@ -543,30 +543,29 @@ const App: React.FC = () => {
   const mainViews = [View.DASHBOARD, View.CALENDAR, View.RANKING, View.ACHIEVEMENTS, View.GRATITUDE, View.JOURNEY, View.MESSAGES];
   const showNavbar = isAuthenticated && user.role !== 'Admin' && mainViews.includes(currentView);
 
-}
-  };
 
-const unreadMessagesCount = messages.filter(m => m.receiverId === user.id && !m.read).length;
 
-return (
-  <div className="min-h-screen bg-deep-void text-text-primary font-sans antialiased overflow-x-hidden">
-    <div className="max-w-screen-2xl mx-auto relative h-full min-h-screen">
-      {renderView()}
-      {showNavbar && <Navbar activeView={currentView} setView={setCurrentView} unreadMessages={unreadMessagesCount} />}
-      {isLogoutModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setIsLogoutModalOpen(false)}></div>
-          <div className="relative glass-panel !bg-slate-900/95 border-aurora-orange/40 w-full max-w-sm p-8 rounded-[40px] shadow-2xl flex flex-col items-center text-center animate-slide-up border-2">
-            <span className="material-symbols-outlined text-aurora-orange text-5xl mb-4">logout</span>
-            <h3 className="text-xl font-black uppercase text-white mb-2">Interromper Jornada?</h3>
-            <button onClick={() => { setIsAuthenticated(false); localStorage.removeItem('triuno_auth'); setCurrentView(View.WELCOME); setIsLogoutModalOpen(false); }} className="w-full py-4 rounded-2xl bg-aurora-orange text-white font-black uppercase tracking-widest mt-4 shadow-glow-orange">Sim, Sair</button>
-            <button onClick={() => setIsLogoutModalOpen(false)} className="w-full py-4 rounded-2xl bg-white/5 text-text-secondary font-black uppercase tracking-widest mt-2">Permanecer</button>
+  const unreadMessagesCount = messages.filter(m => m.receiverId === user.id && !m.read).length;
+
+  return (
+    <div className="min-h-screen bg-deep-void text-text-primary font-sans antialiased overflow-x-hidden">
+      <div className="max-w-screen-2xl mx-auto relative h-full min-h-screen">
+        {renderView()}
+        {showNavbar && <Navbar activeView={currentView} setView={setCurrentView} unreadMessages={unreadMessagesCount} />}
+        {isLogoutModalOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center px-6">
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setIsLogoutModalOpen(false)}></div>
+            <div className="relative glass-panel !bg-slate-900/95 border-aurora-orange/40 w-full max-w-sm p-8 rounded-[40px] shadow-2xl flex flex-col items-center text-center animate-slide-up border-2">
+              <span className="material-symbols-outlined text-aurora-orange text-5xl mb-4">logout</span>
+              <h3 className="text-xl font-black uppercase text-white mb-2">Interromper Jornada?</h3>
+              <button onClick={() => { setIsAuthenticated(false); localStorage.removeItem('triuno_auth'); setCurrentView(View.WELCOME); setIsLogoutModalOpen(false); }} className="w-full py-4 rounded-2xl bg-aurora-orange text-white font-black uppercase tracking-widest mt-4 shadow-glow-orange">Sim, Sair</button>
+              <button onClick={() => setIsLogoutModalOpen(false)} className="w-full py-4 rounded-2xl bg-white/5 text-text-secondary font-black uppercase tracking-widest mt-2">Permanecer</button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default App;

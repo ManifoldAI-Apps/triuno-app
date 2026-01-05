@@ -13,9 +13,10 @@ interface DashboardProps {
   onLogout: () => void;
   onSupport: () => void;
   onAcceptConnection: (id: string) => void;
+  unreadMessages: number;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ setView, tasks, toggleTask, user, wisdom, notifications, markRead, onLogout, onSupport, onAcceptConnection }) => {
+const Dashboard: React.FC<DashboardProps> = ({ setView, tasks, toggleTask, user, wisdom, notifications, markRead, onLogout, onSupport, onAcceptConnection, unreadMessages }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const unreadCount = notifications.filter(n => !n.read).length;
   const todayDate = new Date().toISOString().split('T')[0];
@@ -38,7 +39,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setView, tasks, toggleTask, user,
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden pt-safe pb-48">
       <div className="fixed inset-0 bg-gradient-to-b from-slate-900 to-deep-void pointer-events-none z-0"></div>
-      
+
       <header className="sticky top-0 z-50 glass-panel !bg-deep-void/60 backdrop-blur-xl flex items-center justify-between p-6 md:px-12 pt-8 pb-4 border-b border-white/5">
         <div className="flex items-center gap-3">
           <div className="relative size-10 shrink-0 overflow-hidden rounded-2xl border border-white/10 shadow-lg cursor-pointer transition-all active:scale-90" onClick={() => setView(View.JOURNEY)}>
@@ -53,15 +54,15 @@ const Dashboard: React.FC<DashboardProps> = ({ setView, tasks, toggleTask, user,
         </div>
 
         <h2 className="hidden md:block text-[10px] font-black tracking-[0.4em] uppercase opacity-40">Ascensão Diária</h2>
-        
+
         <div className="flex items-center gap-2">
           <button onClick={onSupport} className="flex size-10 items-center justify-center rounded-2xl glass-panel text-aurora-gold border-aurora-gold/20 active:scale-90 transition-all">
-             <span className="material-symbols-outlined text-[20px]">help</span>
+            <span className="material-symbols-outlined text-[20px]">help</span>
           </button>
           <button onClick={() => setView(View.MESSAGES)} className="relative flex size-10 items-center justify-center rounded-2xl glass-panel text-white border-white/10 active:scale-90 transition-all">
-             <span className="material-symbols-outlined text-[20px]">forum</span>
+            <span className="material-symbols-outlined text-[20px]">forum</span>
           </button>
-          <button onClick={() => {setShowNotifications(true); markRead();}} className="relative flex size-10 items-center justify-center rounded-2xl glass-panel text-text-primary border-white/10 active:scale-90 transition-all">
+          <button onClick={() => { setShowNotifications(true); markRead(); }} className="relative flex size-10 items-center justify-center rounded-2xl glass-panel text-text-primary border-white/10 active:scale-90 transition-all">
             <span className="material-symbols-outlined text-[20px]">notifications</span>
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 size-4 rounded-full bg-aurora-orange flex items-center justify-center text-[8px] font-black text-white border-2 border-deep-void">
@@ -82,22 +83,22 @@ const Dashboard: React.FC<DashboardProps> = ({ setView, tasks, toggleTask, user,
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-sm font-black text-text-secondary tracking-[0.2em] uppercase">Vetor Triuno</h2>
           </div>
-          
+
           <div className="grid grid-cols-3 gap-3">
             {vectors.map((p) => (
               <div key={p.label} className="flex flex-col items-center gap-4 glass-panel p-6 shadow-xl rounded-[32px] border-white/5 transition-transform hover:scale-[1.02]">
                 <div className="relative size-20">
                   <svg className="size-full -rotate-90" viewBox="0 0 36 36">
                     <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3"></circle>
-                    <circle 
-                      cx="18" 
-                      cy="18" 
-                      r="16" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="3" 
-                      strokeDasharray={`${p.val}, 100`} 
-                      strokeLinecap="round" 
+                    <circle
+                      cx="18"
+                      cy="18"
+                      r="16"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeDasharray={`${p.val}, 100`}
+                      strokeLinecap="round"
                       className={`${p.color} transition-all duration-1000 ease-out`}
                     ></circle>
                   </svg>
@@ -130,19 +131,18 @@ const Dashboard: React.FC<DashboardProps> = ({ setView, tasks, toggleTask, user,
                     <p className="text-[10px] text-aurora-gold font-black uppercase tracking-widest mt-0.5">+{task.xp} XP</p>
                   </div>
                 </div>
-                <button 
-                  onClick={() => toggleTask(task.id)} 
-                  className={`size-12 rounded-full border-2 transition-all active:scale-90 flex items-center justify-center shrink-0 ml-4 ${
-                    task.completed 
-                    ? 'bg-aurora-emerald border-aurora-emerald text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]' 
+                <button
+                  onClick={() => toggleTask(task.id)}
+                  className={`size-12 rounded-full border-2 transition-all active:scale-90 flex items-center justify-center shrink-0 ml-4 ${task.completed
+                    ? 'bg-aurora-emerald border-aurora-emerald text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]'
                     : 'border-white/20 text-transparent bg-white/5'
-                  }`}
+                    }`}
                 >
-                   {task.completed ? (
-                     <span className="material-symbols-outlined text-[22px] font-black">done_all</span>
-                   ) : (
-                     <div className="size-full rounded-full border border-white/5"></div>
-                   )}
+                  {task.completed ? (
+                    <span className="material-symbols-outlined text-[22px] font-black">done_all</span>
+                  ) : (
+                    <div className="size-full rounded-full border border-white/5"></div>
+                  )}
                 </button>
               </div>
             ))}
@@ -154,40 +154,40 @@ const Dashboard: React.FC<DashboardProps> = ({ setView, tasks, toggleTask, user,
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setShowNotifications(false)}></div>
           <div className="relative w-full max-w-sm h-full glass-panel !bg-slate-900 border-l border-white/10 shadow-2xl p-6 animate-slide-right">
-             <header className="flex items-center justify-between mb-8">
-                <h2 className="text-sm font-black uppercase tracking-widest">Ecos do Rio</h2>
-                <button onClick={() => setShowNotifications(false)} className="size-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors">
-                  <span className="material-symbols-outlined">close</span>
-                </button>
-             </header>
-             <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-120px)] no-scrollbar">
-                {notifications.length === 0 ? (
-                  <div className="flex flex-col items-center py-20 opacity-30">
-                    <span className="material-symbols-outlined text-4xl mb-4">notifications_off</span>
-                    <p className="text-xs font-black uppercase tracking-widest text-center">Silêncio no éter...</p>
+            <header className="flex items-center justify-between mb-8">
+              <h2 className="text-sm font-black uppercase tracking-widest">Ecos do Rio</h2>
+              <button onClick={() => setShowNotifications(false)} className="size-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </header>
+            <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-120px)] no-scrollbar">
+              {notifications.length === 0 ? (
+                <div className="flex flex-col items-center py-20 opacity-30">
+                  <span className="material-symbols-outlined text-4xl mb-4">notifications_off</span>
+                  <p className="text-xs font-black uppercase tracking-widest text-center">Silêncio no éter...</p>
+                </div>
+              ) : notifications.map(n => (
+                <div key={n.id} className="p-4 glass-panel rounded-2xl border-white/5 flex flex-col gap-3 hover:bg-white/[0.03] transition-colors">
+                  <div className="flex gap-4">
+                    <span className="material-symbols-outlined text-aurora-blue mt-1">{n.icon}</span>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium leading-relaxed">{n.message}</p>
+                      <p className="text-[9px] opacity-40 uppercase font-black mt-1 tracking-widest">{n.time}</p>
+                    </div>
                   </div>
-                ) : notifications.map(n => (
-                  <div key={n.id} className="p-4 glass-panel rounded-2xl border-white/5 flex flex-col gap-3 hover:bg-white/[0.03] transition-colors">
-                     <div className="flex gap-4">
-                        <span className="material-symbols-outlined text-aurora-blue mt-1">{n.icon}</span>
-                        <div className="flex-1">
-                           <p className="text-xs font-medium leading-relaxed">{n.message}</p>
-                           <p className="text-[9px] opacity-40 uppercase font-black mt-1 tracking-widest">{n.time}</p>
-                        </div>
-                     </div>
-                     {n.type === 'CONNECTION_REQUEST' && !user.connections?.includes(n.fromUserId || '') && (
-                        <div className="flex gap-2 pl-10">
-                           <button 
-                             onClick={() => { onAcceptConnection(n.fromUserId!); setShowNotifications(false); }}
-                             className="flex-1 py-2 bg-aurora-blue rounded-xl text-[9px] font-black uppercase tracking-widest text-white shadow-glow-blue"
-                           >
-                             Aceitar Sincronia
-                           </button>
-                        </div>
-                     )}
-                  </div>
-                ))}
-             </div>
+                  {n.type === 'CONNECTION_REQUEST' && !user.connections?.includes(n.fromUserId || '') && (
+                    <div className="flex gap-2 pl-10">
+                      <button
+                        onClick={() => { onAcceptConnection(n.fromUserId!); setShowNotifications(false); }}
+                        className="flex-1 py-2 bg-aurora-blue rounded-xl text-[9px] font-black uppercase tracking-widest text-white shadow-glow-blue"
+                      >
+                        Aceitar Sincronia
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
