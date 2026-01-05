@@ -34,6 +34,7 @@ export interface Task {
   icon: string;
   scheduledDate: string;
   imageUrl?: string;
+  userId?: string;
 }
 
 export interface User {

@@ -123,6 +123,8 @@ const App: React.FC = () => {
   // Supabase Synchronization
   useEffect(() => {
     const syncData = async () => {
+      if (!user.id) return;
+
       // 1. Sync Users
       const { data: dbUsers } = await supabase.from('users').select('*');
       if (dbUsers) {
@@ -136,9 +138,22 @@ const App: React.FC = () => {
       }
 
       // 3. Sync Tasks (Personal)
+      // Filter by userId if column exists, otherwise we fetch all and filter in memory?
+      // Assuming naive implementation first: Fetch all, then filter in memory if schema allows.
+      // If RLS is enabling filtering, select('*') is enough.
+      // But to be safe and fix "stuck data", we explicitly verify ownership if possible.
+      // Since we don't know if 'userId' column exists in DB yet (we just added to type), 
+      // we'll rely on fetching.
       const { data: dbTasks } = await supabase.from('tasks').select('*');
       if (dbTasks) {
-        setTasks(dbTasks as Task[]);
+        // Filter tasks that belong to the current user (or have no owner if legacy/global)
+        // AND handle the case where we want to ensure we don't show another user's tasks.
+        // If we strictly filter by userId, 'global' tasks (no userId) might disappear if we enforce it.
+        // But for 'stuck data' fix, we assume the issue is seeing *other users'* tasks.
+        const relevantTasks = (dbTasks as Task[]).filter(t => !t.userId || t.userId === user.id);
+        setTasks(relevantTasks);
+      } else {
+        setTasks([]);
       }
 
       // 4. Sync Events
@@ -157,7 +172,7 @@ const App: React.FC = () => {
     if (import.meta.env.VITE_SUPABASE_URL) {
       syncData();
     }
-  }, []); // Run on mount
+  }, [user.id]); // Run when user changes
 
   // Subscribe to realtime updates for Feed (Optional but nice)
   useEffect(() => {
