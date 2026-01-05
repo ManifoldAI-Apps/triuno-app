@@ -124,69 +124,39 @@ const App: React.FC = () => {
     const syncData = async () => {
       // 1. Sync Users
       const { data: dbUsers } = await supabase.from('users').select('*');
-      if (dbUsers && dbUsers.length > 0) {
-        // 1. Sync Users & Seed Admin
-        const { data: dbUsers } = await supabase.from('users').select('*');
-        let currentUsers = (dbUsers as User[]) || [];
-
-        // Check for Admin and Seed if missing
-        const adminExists = currentUsers.some(u => u.email === 'admin@triuno.com');
-        if (!adminExists) {
-          const adminUser: User = {
-            id: 'u-admin',
-            name: 'Guardião Mor',
-            email: 'admin@triuno.com',
-            password: 'admin123',
-            level: 99,
-            xp: 0,
-            avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCy27OZRVPYL9uLDgzs8XFelX0f7WyvaF6fP5w5zXYZiKuFIgpr0tPEJEx88kHpLbvlfcXybO6dq6AguVjQiCvybvkO6np1ey2qPISQj11Jh36s-dJqSgJtuhkrCnl8Mgcx9o1tY-0t5sWaDjP6YxwYLjQ_z-bKLPDtbQJrEWBa1xEELWHt1cKgc2B8rvktpKQtLMem7sbdiFgpJkKy6eRPv4pkYNaxmGeVlZ8gOhMFIU9hpJHPxUYcDOFpvP8bDQQ0I2V1O6ROQtCE',
-            status: 'Ativo',
-            role: 'Admin',
-            bio: 'O arquiteto da Senda Triuna.',
-            connections: [],
-            pendingRequests: [],
-            sentRequests: [],
-            hasAcceptedCommitment: true,
-            isVerified: true
-          };
-
-          await supabase.from('users').insert(adminUser);
-          currentUsers.push(adminUser);
-        }
-
-        setRegisteredUsers(currentUsers);
-
-        // 2. Sync Gratitude (Feed is shared)
-        const { data: dbPosts } = await supabase.from('gratitudePosts').select('*').order('createdAt', { ascending: false });
-        if (dbPosts && dbPosts.length > 0) {
-          setGratitudePosts(dbPosts as GratitudePost[]);
-        }
-
-        // 3. Sync Tasks (Personal)
-        // We need to fetch tasks only if we have a user? Or fetch all for admin?
-        // Current app loads tasks globally from 'triuno_tasks'. We will try to fetch tasks.
-        const { data: dbTasks } = await supabase.from('tasks').select('*');
-        if (dbTasks && dbTasks.length > 0) {
-          setTasks(dbTasks as Task[]);
-        }
-
-        // 4. Sync Events
-        const { data: dbEvents } = await supabase.from('events').select('*');
-        if (dbEvents && dbEvents.length > 0) {
-          setEvents(dbEvents as AppEvent[]);
-        }
-
-        // 5. Sync Messages
-        const { data: dbMessages } = await supabase.from('messages').select('*');
-        if (dbMessages && dbMessages.length > 0) {
-          setMessages(dbMessages as ChatMessage[]);
-        }
-      };
-
-      if (import.meta.env.VITE_SUPABASE_URL) {
-        syncData();
+      if (dbUsers) {
+        setRegisteredUsers(dbUsers as User[]);
       }
-    }, []); // Run on mount
+
+      // 2. Sync Gratitude (Feed is shared)
+      const { data: dbPosts } = await supabase.from('gratitudePosts').select('*').order('createdAt', { ascending: false });
+      if (dbPosts) {
+        setGratitudePosts(dbPosts as GratitudePost[]);
+      }
+
+      // 3. Sync Tasks (Personal)
+      const { data: dbTasks } = await supabase.from('tasks').select('*');
+      if (dbTasks) {
+        setTasks(dbTasks as Task[]);
+      }
+
+      // 4. Sync Events
+      const { data: dbEvents } = await supabase.from('events').select('*');
+      if (dbEvents) {
+        setEvents(dbEvents as AppEvent[]);
+      }
+
+      // 5. Sync Messages
+      const { data: dbMessages } = await supabase.from('messages').select('*');
+      if (dbMessages) {
+        setMessages(dbMessages as ChatMessage[]);
+      }
+    };
+
+    if (import.meta.env.VITE_SUPABASE_URL) {
+      syncData();
+    }
+  }, []); // Run on mount
 
   // Subscribe to realtime updates for Feed (Optional but nice)
   useEffect(() => {
