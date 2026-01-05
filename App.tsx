@@ -216,7 +216,13 @@ const App: React.FC = () => {
       setUser(found);
       setIsAuthenticated(true);
       localStorage.setItem('triuno_auth', 'true');
-      setCurrentView(found.role === 'Admin' ? View.ADMIN_DASHBOARD : View.DASHBOARD);
+
+      // Check if user has accepted commitment
+      if (found.role !== 'Admin' && !found.hasAcceptedCommitment) {
+        setCurrentView(View.COMMITMENT);
+      } else {
+        setCurrentView(found.role === 'Admin' ? View.ADMIN_DASHBOARD : View.DASHBOARD);
+      }
       return true;
     }
     return false;
@@ -255,11 +261,23 @@ const App: React.FC = () => {
     }
 
     setRegisteredUsers(prev => [...prev, newUser]);
-    setUser(newUser);
-    setIsAuthenticated(true);
-    localStorage.setItem('triuno_auth', 'true');
-    setCurrentView(View.DASHBOARD);
+    // Redirect to Login instead of auto-login
+    // setUser(newUser);
+    // setIsAuthenticated(true);
+    // localStorage.setItem('triuno_auth', 'true');
+    setCurrentView(View.LOGIN);
     return true;
+  };
+
+  const handleCommitmentAccepted = async () => {
+    const updated = { ...user, hasAcceptedCommitment: true };
+    setUser(updated);
+    setRegisteredUsers(prev => prev.map(u => u.id === user.id ? updated : u));
+
+    // Save to Supabase
+    await supabase.from('users').upsert(updated);
+
+    setCurrentView(View.DASHBOARD);
   };
 
   const handleUpdateUser = async (updatedData: Partial<User>) => {
@@ -457,6 +475,7 @@ const App: React.FC = () => {
       case View.WELCOME: return <Welcome onNext={() => setCurrentView(View.LOGIN)} onAdminLogin={() => { }} />;
       case View.LOGIN: return <Login onLogin={handleLogin} onGoToRegister={() => setCurrentView(View.REGISTER)} onGoToForgotPassword={() => setCurrentView(View.FORGOT_PASSWORD)} />;
       case View.REGISTER: return <Register onRegister={handleRegister} onGoToLogin={() => setCurrentView(View.LOGIN)} />;
+      case View.COMMITMENT: return <Commitment user={user} onNext={handleCommitmentAccepted} />;
       case View.DASHBOARD: return <Dashboard setView={setCurrentView} tasks={tasks} toggleTask={handleToggleTask} user={user} wisdom={wisdom} notifications={notifications} markRead={() => setNotifications(n => n.map(x => ({ ...x, read: true })))} onLogout={() => setIsLogoutModalOpen(true)} onSupport={handleOpenSupport} onAcceptConnection={handleAcceptConnection} />;
       case View.RANKING: return <Ranking setView={setCurrentView} userXP={user.xp} onUserClick={(id) => { setSelectedProfileId(id); setCurrentView(View.USER_PROFILE); }} registeredUsers={registeredUsers} />;
       case View.JOURNEY: return <Journey setView={setCurrentView} user={user} tasks={tasks} onLogout={() => setIsLogoutModalOpen(true)} onUpdateUser={handleUpdateUser} onSupport={handleOpenSupport} />;
