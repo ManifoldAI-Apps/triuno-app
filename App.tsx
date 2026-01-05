@@ -478,7 +478,31 @@ const App: React.FC = () => {
       case View.CALENDAR: return <CalendarView setView={setCurrentView} events={events} onAttend={handleAttendEvent} attendedEvents={attendedEvents} />;
       case View.USER_PROFILE:
         const profile = registeredUsers.find(u => u.id === selectedProfileId);
-        return <UserProfile user={user} profile={profile!} onBack={() => setCurrentView(View.RANKING)} onRequestConnection={handleRequestConnection} onMessage={(id) => { setSelectedProfileId(id); setCurrentView(View.MESSAGES); }} />;
+
+        // Calculate Stats based on TASKS
+        // Note: Currently 'tasks' state only holds tasks for the logged-in user (due to presumed RLS or filter).
+        // So if profile.id === user.id, these stats are accurate.
+        // For other users, we would need to fetch their tasks. For now, we show 0 or assume tasks are shared?
+        // Assuming tasks are PERSONAL.
+
+        let stats = { corpo: 0, alma: 0, espirito: 0 };
+
+        if (profile?.id === user.id) {
+          const calculateStat = (category: string) => {
+            const catTasks = tasks.filter(t => t.category === category);
+            if (catTasks.length === 0) return 0;
+            const completed = catTasks.filter(t => t.completed).length;
+            return Math.round((completed / catTasks.length) * 100);
+          };
+
+          stats = {
+            corpo: calculateStat('Corpo'),
+            alma: calculateStat('Alma'),
+            espirito: calculateStat('Espírito')
+          };
+        }
+
+        return <UserProfile user={user} profile={profile!} stats={stats} onBack={() => setCurrentView(View.RANKING)} onRequestConnection={handleRequestConnection} onMessage={(id) => { setSelectedProfileId(id); setCurrentView(View.MESSAGES); }} />;
       case View.MESSAGES:
         return <DirectMessages user={user} initialContactId={selectedProfileId} registeredUsers={registeredUsers} messages={messages} onSendMessage={sendMessage} onBack={() => setCurrentView(View.DASHBOARD)} />;
       default: return <Dashboard setView={setCurrentView} tasks={tasks} toggleTask={() => { }} user={user} wisdom={wisdom} notifications={notifications} markRead={() => { }} onLogout={() => { }} onSupport={handleOpenSupport} onAcceptConnection={handleAcceptConnection} />;

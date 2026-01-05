@@ -5,6 +5,7 @@ import { User } from '../types';
 interface UserProfileProps {
   user: User;
   profile: User;
+  stats?: { corpo: number; alma: number; espirito: number }; // Added stats prop
   onBack: () => void;
   onRequestConnection: (id: string) => void;
   onMessage: (id: string) => void;
@@ -75,16 +76,16 @@ const TriangleGraph: React.FC<{ values: { corpo: number; alma: number; espirito:
   );
 };
 
-const UserProfile: React.FC<UserProfileProps> = ({ user, profile, onBack, onRequestConnection, onMessage }) => {
+const UserProfile: React.FC<UserProfileProps> = ({ user, profile, stats, onBack, onRequestConnection, onMessage }) => {
   const isConnected = (user.connections || []).includes(profile.id);
   const isRequestSent = (user.sentRequests || []).includes(profile.id);
   const isPendingMyAcceptance = (user.pendingRequests || []).includes(profile.id);
 
-  // Mock de evolução para o perfil visualizado
-  const profileEvolution = {
-    corpo: Math.min(100, profile.level * 5),
-    alma: Math.min(100, profile.level * 5),
-    espirito: Math.min(100, profile.level * 5)
+  // Use provided stats or default to 0 if missing (e.g. for other users if data not loaded)
+  const profileEvolution = stats || {
+    corpo: 0,
+    alma: 0,
+    espirito: 0
   };
 
   return (
