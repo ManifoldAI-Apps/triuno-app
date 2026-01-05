@@ -19,34 +19,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ setView, totalGratitude
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col bg-deep-void">
-      <div className="fixed left-3 top-10 bottom-3 w-[72px] glass-panel z-50 flex flex-col items-center py-8 gap-10 rounded-[32px] border-white/10 shadow-2xl">
-        <div className="mt-2 group">
-          <div className="size-12 rounded-2xl bg-aurora-blue/20 border border-aurora-blue/30 flex items-center justify-center transition-all group-hover:shadow-glow-blue">
-            <span className="material-symbols-outlined text-aurora-blue text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>shield_person</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-8 w-full items-center flex-1 justify-center">
-          <button onClick={() => setView(View.ADMIN_DASHBOARD)} className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 text-white shadow-glow-blue border border-white/10 active:scale-90 transition-all">
-            <span className="material-symbols-outlined">dashboard</span>
-          </button>
-          <button onClick={() => setView(View.ADMIN_CALENDAR)} className="flex items-center justify-center w-12 h-12 rounded-2xl text-text-secondary hover:text-white active:scale-90 transition-all">
-            <span className="material-symbols-outlined">calendar_today</span>
-          </button>
-          <button onClick={() => setView(View.ADMIN_USERS)} className="flex items-center justify-center w-12 h-12 rounded-2xl text-text-secondary hover:text-white active:scale-90 transition-all">
-            <span className="material-symbols-outlined">group</span>
-          </button>
-          <button onClick={() => setView(View.ADMIN_FORGE)} className="flex items-center justify-center w-12 h-12 rounded-2xl text-text-secondary hover:text-white active:scale-90 transition-all">
-            <span className="material-symbols-outlined">construction</span>
-          </button>
-        </div>
-
-        <button onClick={onLogout} className="flex items-center justify-center w-12 h-12 rounded-2xl bg-red-500/10 text-red-400 border border-red-500/20 active:scale-90 transition-all">
-          <span className="material-symbols-outlined">logout</span>
-        </button>
-      </div>
-
-      <div className="pl-[96px] pr-6 pt-10 pb-12 overflow-y-auto w-full max-w-4xl mx-auto">
+      <div className="px-6 py-10 overflow-y-auto w-full max-w-4xl mx-auto">
         <header className="mb-10">
           <div className="glass-panel rounded-[32px] px-8 py-5 flex items-center justify-between shadow-2xl border-white/5 bg-gradient-to-r from-slate-800 to-transparent">
             <div>
@@ -117,6 +90,24 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ setView, totalGratitude
                 </div>
               </div>
               <span className="material-symbols-outlined text-text-secondary group-hover:translate-x-2 transition-transform">chevron_right</span>
+            </div>
+
+            <div onClick={() => setView(View.ADMIN_USERS)} className="relative h-28 rounded-[32px] overflow-hidden glass-panel cursor-pointer group p-6 flex items-center justify-between border-white/10 hover:border-indigo-500/30 transition-all active:scale-98">
+              <div className="flex items-center gap-5 z-20">
+                <div className="size-14 rounded-2xl bg-indigo-900/40 text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-3xl">group</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-text-primary font-black tracking-widest uppercase">Gerenciar Usuários</span>
+                  <span className="text-text-secondary text-[10px] font-bold uppercase tracking-widest opacity-60">Base de Guardiões</span>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-text-secondary group-hover:translate-x-2 transition-transform">chevron_right</span>
+            </div>
+
+            <div onClick={onLogout} className="relative h-28 col-span-1 md:col-span-2 rounded-[32px] overflow-hidden glass-panel cursor-pointer group p-6 flex items-center justify-center gap-3 border-white/10 hover:bg-red-500/10 hover:border-red-500/20 transition-all active:scale-95">
+              <span className="material-symbols-outlined text-red-400 text-2xl">logout</span>
+              <span className="text-red-400 font-black tracking-[0.3em] uppercase text-sm">Encerrar Sessão</span>
             </div>
           </div>
         </section>

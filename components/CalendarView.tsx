@@ -50,7 +50,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ setView, events, onAttend, 
           {sortedEvents.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 opacity-30 text-center">
               <span className="material-symbols-outlined text-6xl mb-6">event_busy</span>
-              <p className="text-xs font-black uppercase tracking-[0.25em] leading-relaxed">O éter está silencioso.<br/>Novos portais abrirão em breve.</p>
+              <p className="text-xs font-black uppercase tracking-[0.25em] leading-relaxed">O éter está silencioso.<br />Novos portais abrirão em breve.</p>
             </div>
           ) : (
             sortedEvents.map((event, idx) => {
@@ -59,7 +59,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ setView, events, onAttend, 
               const formattedDate = eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 
               return (
-                <div 
+                <div
                   key={event.id}
                   onClick={() => handleEventClick(event)}
                   className={`group relative glass-panel rounded-[32px] overflow-hidden border-white/5 hover:border-aurora-blue/30 transition-all cursor-pointer animate-slide-up shadow-xl ${isAttended ? 'opacity-80' : ''}`}
@@ -71,7 +71,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ setView, events, onAttend, 
                         <img src={event.imageUrl} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-700" alt={event.title} />
                       ) : (
                         <div className="w-full h-full bg-slate-800 flex items-center justify-center">
-                           <span className="material-symbols-outlined text-4xl opacity-10">image</span>
+                          <span className="material-symbols-outlined text-4xl opacity-10">image</span>
                         </div>
                       )}
                       <div className="absolute top-4 left-4 glass-panel px-4 py-1.5 rounded-xl border-white/10 backdrop-blur-md shadow-lg">
@@ -82,10 +82,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({ setView, events, onAttend, 
                     <div className="flex-1 p-8 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center gap-3 mb-3">
-                           <span className="text-aurora-gold text-[10px] font-black uppercase tracking-[0.25em]">{formattedDate} • {event.time}</span>
-                           {isAttended && (
-                             <span className="bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase px-2.5 py-1 rounded-full border border-emerald-500/30 tracking-widest">REGISTRADO</span>
-                           )}
+                          <span className="text-aurora-gold text-[10px] font-black uppercase tracking-[0.25em]">{formattedDate} • {event.time}</span>
+                          {isAttended && (
+                            <span className="bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase px-2.5 py-1 rounded-full border border-emerald-500/30 tracking-widest">REGISTRADO</span>
+                          )}
                         </div>
                         <h2 className="text-xl font-black text-text-primary leading-tight mb-4 group-hover:text-aurora-blue transition-colors uppercase tracking-wide">
                           {event.title}
@@ -94,10 +94,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({ setView, events, onAttend, 
 
                       <div className="flex items-center justify-between pt-4 border-t border-white/5">
                         <div className="flex items-center gap-2">
-                           <div className="size-8 rounded-xl bg-aurora-gold/10 flex items-center justify-center border border-aurora-gold/10">
-                              <span className="material-symbols-outlined text-aurora-gold text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
-                           </div>
-                           <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">+{event.xpReward} XP</span>
+                          <div className="size-8 rounded-xl bg-aurora-gold/10 flex items-center justify-center border border-aurora-gold/10">
+                            <span className="material-symbols-outlined text-aurora-gold text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+                          </div>
+                          <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">+{event.xpReward} XP</span>
                         </div>
                         <span className="material-symbols-outlined text-text-secondary group-hover:translate-x-1 transition-transform group-hover:text-white">{isAttended ? 'task_alt' : 'arrow_forward'}</span>
                       </div>
@@ -116,7 +116,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ setView, events, onAttend, 
           <div className="relative w-full max-w-2xl bg-slate-900 md:rounded-[48px] rounded-t-[48px] border-t md:border border-white/10 shadow-3xl overflow-hidden flex flex-col max-h-[92dvh] animate-slide-up">
             <div className="relative w-full aspect-video overflow-hidden">
               <img src={selectedEvent.imageUrl} className="w-full h-full object-cover" alt={selectedEvent.title} />
-              <button 
+              <button
                 onClick={() => setSelectedEvent(null)}
                 className="absolute top-6 right-6 size-12 glass-panel !rounded-2xl flex items-center justify-center text-white active:scale-90 transition-all border-white/20 z-20 shadow-xl"
               >
@@ -124,24 +124,24 @@ const CalendarView: React.FC<CalendarViewProps> = ({ setView, events, onAttend, 
               </button>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/10 to-transparent"></div>
               <div className="absolute bottom-8 left-8 flex gap-3">
-                 <span className="bg-aurora-blue text-white text-[10px] font-black uppercase px-5 py-2.5 rounded-2xl tracking-[0.2em] shadow-2xl border border-white/10">{selectedEvent.type}</span>
+                <span className="bg-aurora-blue text-white text-[10px] font-black uppercase px-5 py-2.5 rounded-2xl tracking-[0.2em] shadow-2xl border border-white/10">{selectedEvent.type}</span>
               </div>
             </div>
 
             <div className="p-8 md:p-10 flex flex-col gap-8 overflow-y-auto no-scrollbar">
               <div className="flex items-center gap-4">
-                 <div className="glass-panel p-4 rounded-[24px] border-white/10 text-center min-w-[85px] shadow-lg">
-                    <p className="text-[10px] font-black text-text-secondary uppercase mb-1 tracking-widest">Data</p>
-                    <p className="text-sm font-black text-text-primary uppercase tracking-widest">{new Date(selectedEvent.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</p>
-                 </div>
-                 <div className="glass-panel p-4 rounded-[24px] border-white/10 text-center min-w-[85px] shadow-lg">
-                    <p className="text-[10px] font-black text-text-secondary uppercase mb-1 tracking-widest">Horário</p>
-                    <p className="text-sm font-black text-text-primary tracking-widest">{selectedEvent.time}</p>
-                 </div>
-                 <div className="glass-panel p-4 rounded-[24px] border-aurora-gold/30 text-center min-w-[85px] bg-aurora-gold/10 shadow-lg">
-                    <p className="text-[10px] font-black text-aurora-gold uppercase mb-1 tracking-widest">Bônus</p>
-                    <p className="text-sm font-black text-aurora-gold tracking-widest">+{selectedEvent.xpReward} XP</p>
-                 </div>
+                <div className="glass-panel p-4 rounded-[24px] border-white/10 text-center min-w-[85px] shadow-lg">
+                  <p className="text-[10px] font-black text-text-secondary uppercase mb-1 tracking-widest">Data</p>
+                  <p className="text-sm font-black text-text-primary uppercase tracking-widest">{new Date(selectedEvent.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</p>
+                </div>
+                <div className="glass-panel p-4 rounded-[24px] border-white/10 text-center min-w-[85px] shadow-lg">
+                  <p className="text-[10px] font-black text-text-secondary uppercase mb-1 tracking-widest">Horário</p>
+                  <p className="text-sm font-black text-text-primary tracking-widest">{selectedEvent.time}</p>
+                </div>
+                <div className="glass-panel p-4 rounded-[24px] border-aurora-gold/30 text-center min-w-[85px] bg-aurora-gold/10 shadow-lg">
+                  <p className="text-[10px] font-black text-aurora-gold uppercase mb-1 tracking-widest">Bônus</p>
+                  <p className="text-sm font-black text-aurora-gold tracking-widest">+{selectedEvent.xpReward} XP</p>
+                </div>
               </div>
 
               <div>
@@ -151,38 +151,46 @@ const CalendarView: React.FC<CalendarViewProps> = ({ setView, events, onAttend, 
                 </p>
               </div>
 
-              {selectedEvent.link && (selectedEvent.link.includes('youtube.com') || selectedEvent.link.includes('youtu.be')) && (
+              {selectedEvent.link && (selectedEvent.link.includes('youtube.com') || selectedEvent.link.includes('youtu.be')) ? (
                 <div className="rounded-[32px] overflow-hidden border-2 border-white/10 aspect-video bg-black/80 shadow-3xl">
-                   <iframe 
-                      className="w-full h-full"
-                      src={`https://www.youtube.com/embed/${selectedEvent.link.includes('v=') ? selectedEvent.link.split('v=')[1].split('&')[0] : selectedEvent.link.split('/').pop()}`}
-                      title="YouTube video player" 
-                      frameBorder="0" 
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                      allowFullScreen
-                   ></iframe>
+                  <iframe
+                    className="w-full h-full"
+                    src={`https://www.youtube.com/embed/${selectedEvent.link.includes('v=')
+                        ? selectedEvent.link.split('v=')[1].split('&')[0]
+                        : selectedEvent.link.split('/').pop()
+                      }`}
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
                 </div>
-              )}
+              ) : selectedEvent.link ? (
+                <div className="flex justify-center p-4">
+                  <a href={selectedEvent.link} target="_blank" rel="noopener noreferrer" className="text-aurora-blue underline font-black uppercase text-xs tracking-widest">
+                    Abrir Link Externo
+                  </a>
+                </div>
+              ) : null}
 
               <div className="pt-2 pb-6">
-                 <button 
+                <button
                   onClick={() => handleParticipate(selectedEvent)}
                   disabled={attendedEvents.includes(selectedEvent.id) || isSuccess}
-                  className={`w-full py-6 rounded-[32px] flex items-center justify-center gap-4 transition-all active:scale-95 shadow-3xl relative overflow-hidden border-2 border-white/10 ${
-                    attendedEvents.includes(selectedEvent.id) 
-                    ? 'bg-slate-800 text-text-secondary cursor-default opacity-50' 
-                    : isSuccess 
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-gradient-to-r from-aurora-blue to-aurora-purple text-white shadow-glow-blue'
-                  }`}
-                 >
-                   <span className="material-symbols-outlined text-2xl relative z-10">
+                  className={`w-full py-6 rounded-[32px] flex items-center justify-center gap-4 transition-all active:scale-95 shadow-3xl relative overflow-hidden border-2 border-white/10 ${attendedEvents.includes(selectedEvent.id)
+                      ? 'bg-slate-800 text-text-secondary cursor-default opacity-50'
+                      : isSuccess
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-gradient-to-r from-aurora-blue to-aurora-purple text-white shadow-glow-blue'
+                    }`}
+                >
+                  <span className="material-symbols-outlined text-2xl relative z-10">
                     {attendedEvents.includes(selectedEvent.id) ? 'verified' : isSuccess ? 'celebration' : 'bolt'}
-                   </span>
-                   <span className="text-xs font-black uppercase tracking-[0.4em] relative z-10">
+                  </span>
+                  <span className="text-xs font-black uppercase tracking-[0.4em] relative z-10">
                     {attendedEvents.includes(selectedEvent.id) ? 'PRESENÇA JÁ REGISTRADA' : isSuccess ? 'XP CONCEDIDO!' : 'ACESSAR E COLETAR XP'}
-                   </span>
-                 </button>
+                  </span>
+                </button>
               </div>
             </div>
           </div>
