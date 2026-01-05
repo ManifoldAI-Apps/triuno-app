@@ -1,23 +1,38 @@
 
 import React, { useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 interface LoginProps {
-  onLogin: (email: string, pass: string) => boolean;
   onGoToRegister: () => void;
   onGoToForgotPassword: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin, onGoToRegister, onGoToForgotPassword }) => {
+const Login: React.FC<LoginProps> = ({ onGoToRegister, onGoToForgotPassword }) => {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    const success = onLogin(email, pass);
-    if (!success) {
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: pass,
+      });
+
+      if (error) {
+        throw error;
+      }
+      // Sucesso: O App.tsx vai detectar a mudança de sessão e redirecionar.
+    } catch (err: any) {
+      console.error(err);
       setError('E-mail ou senha incorretos.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,6 +56,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onGoToRegister, onGoToForgotPass
               placeholder="seu@email.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
+              disabled={loading}
             />
           </div>
 
@@ -62,20 +78,22 @@ const Login: React.FC<LoginProps> = ({ onLogin, onGoToRegister, onGoToForgotPass
               placeholder="••••••••"
               value={pass}
               onChange={e => setPass(e.target.value)}
+              disabled={loading}
             />
           </div>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl animate-shake mt-4">
-              <p className="text-red-400 text-xs font-black uppercase tracking-widest text-center">E-mail ou senha incorretos.</p>
+              <p className="text-red-400 text-xs font-black uppercase tracking-widest text-center">{error}</p>
             </div>
           )}
 
           <button
             type="submit"
-            className="w-full h-14 bg-gradient-to-r from-aurora-blue to-aurora-purple text-white font-black text-xs tracking-[0.3em] rounded-2xl shadow-glow-blue uppercase active:scale-95 transition-all"
+            disabled={loading}
+            className="w-full h-14 bg-gradient-to-r from-aurora-blue to-aurora-purple text-white font-black text-xs tracking-[0.3em] rounded-2xl shadow-glow-blue uppercase active:scale-95 transition-all disabled:opacity-50"
           >
-            Entrar
+            {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
 

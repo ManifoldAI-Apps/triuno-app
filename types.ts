@@ -41,7 +41,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  password?: string;
+
   level: number;
   xp: number;
   avatar: string;
