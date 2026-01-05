@@ -104,18 +104,19 @@ const App: React.FC = () => {
 
   // Cleanup Legacy Mock Data (One-time run)
   useEffect(() => {
-    const CLEANUP_VERSION = 'v1.1';
+    const CLEANUP_VERSION = 'v1.2';
     const currentVersion = localStorage.getItem('triuno_cleanup_version');
 
     if (currentVersion !== CLEANUP_VERSION) {
-      console.log('Cleaning up legacy mock data...');
-      // Clear specific keys known to have mock data
-      localStorage.removeItem('triuno_gratitude'); // Clears old 'Rio da Luz' feeds
-      // We don't clear users to not kill the session, but we refresh from DB below.
+      console.log('Cleaning up legacy mock data v1.2...');
+      localStorage.removeItem('triuno_gratitude');
+      localStorage.removeItem('triuno_tasks');
+      localStorage.removeItem('triuno_notifications');
 
       localStorage.setItem('triuno_cleanup_version', CLEANUP_VERSION);
-      // Force reload state for gratitude
+      // Force reload state
       setGratitudePosts([]);
+      setNotifications([]);
     }
   }, []);
 
@@ -243,7 +244,34 @@ const App: React.FC = () => {
   };
 
   const handleUpdateUser = async (updatedData: Partial<User>) => {
-    const updated = { ...user, ...updatedData };
+    let updated = { ...user, ...updatedData };
+
+    // Level Up Logic
+    if (updatedData.xp !== undefined) {
+      let newLevel = updated.level;
+      let newXp = updated.xp;
+
+      while (newXp >= 100) {
+        newXp -= 100;
+        newLevel += 1;
+
+        // Notify Level Up
+        const notif: AppNotification = {
+          id: `lvl-${Date.now()}-${newLevel}`,
+          message: `Ascensão alcançada! Bem-vindo ao nível ${newLevel}.`,
+          time: 'Agora',
+          timestamp: Date.now(),
+          read: false,
+          icon: 'stars',
+          type: 'LEVEL'
+        };
+        setNotifications(prev => [notif, ...prev]);
+      }
+
+      updated.level = newLevel;
+      updated.xp = newXp;
+    }
+
     setUser(updated);
     setRegisteredUsers(prev => prev.map(u => u.id === user.id ? updated : u));
 
@@ -470,7 +498,8 @@ const App: React.FC = () => {
     };
     setGratitudePosts(prev => [newPost, ...prev]);
     setCurrentView(View.GRATITUDE);
-    handleUpdateUser({ xp: Math.min(100, user.xp + 5) });
+    setCurrentView(View.GRATITUDE);
+    handleUpdateUser({ xp: user.xp + 5 });
 
     // Save to DB
     await supabase.from('gratitudePosts').insert(newPost);
