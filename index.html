@@ -1,11 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
+
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Triuno - Ascensão</title>
-    
+
     <!-- Configurações PWA / Mobile Nativo -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,9 +17,11 @@
     <!-- Preconexão Prioritária -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
+
     <!-- Link de Fontes Otimizado -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0&display=block" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@200..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0&display=block"
+        rel="stylesheet" />
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
@@ -53,7 +56,7 @@
             --sat: env(safe-area-inset-top);
             --sab: env(safe-area-inset-bottom);
         }
-        
+
         /* Previne o Flash de Texto: Esconde ícones até a fonte carregar */
         .material-symbols-outlined {
             font-variation-settings: 'wght' 300;
@@ -86,34 +89,62 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
-        
+
         .glass-panel {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        
-        .pb-safe { padding-bottom: calc(var(--sab) + 1rem); }
-        .pt-safe { padding-top: calc(var(--sat) + 1rem); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        
+
+        .pb-safe {
+            padding-bottom: calc(var(--sab) + 1rem);
+        }
+
+        .pt-safe {
+            padding-top: calc(var(--sat) + 1rem);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .animate-fade-in { animation: fadeInUp 0.4s ease-out forwards; }
-        
+
+        .animate-fade-in {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .animate-slide-up {
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
-    
+
     <!-- Script de Detecção de Fontes -->
     <script>
-        document.fonts.ready.then(function() {
+        document.fonts.ready.then(function () {
             document.documentElement.classList.add('fonts-loaded');
         });
     </script>
@@ -130,10 +161,11 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
+
 <body>
     <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>
