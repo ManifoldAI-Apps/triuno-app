@@ -422,21 +422,7 @@ const App: React.FC = () => {
         console.error("Erro no portal de mensagens:", err);
       }
     } else {
-      const targetUser = registeredUsers.find(u => u.id === receiverId);
-      if (targetUser) {
-        setTimeout(() => {
-          const replyText = `Eco recebido por ${targetUser.name}.`;
-          const reply: ChatMessage = {
-            id: `m-reply-${Date.now()}`,
-            senderId: receiverId,
-            receiverId: user.id,
-            text: replyText,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            read: false
-          };
-          setMessages(prev => [...prev, reply]);
-        }, 1500);
-      }
+      // No auto-reply for regular users
     }
   };
 
@@ -451,12 +437,25 @@ const App: React.FC = () => {
 
   const renderView = () => {
     if (user.role === 'Admin' && isAuthenticated) {
+      const handleNotify = (msg: string, icon: string) => {
+        const newNotif: AppNotification = {
+          id: `adm-act-${Date.now()}`,
+          message: msg,
+          time: 'Agora',
+          timestamp: Date.now(),
+          read: false,
+          icon: icon,
+          type: 'SYSTEM'
+        };
+        setNotifications(prev => [newNotif, ...prev]);
+      };
+
       switch (currentView) {
         case View.ADMIN_DASHBOARD: return <AdminDashboard setView={setCurrentView} totalGratitude={gratitudePosts.length} onLogout={() => setIsLogoutModalOpen(true)} user={user} />;
         case View.ADMIN_USERS: return <AdminUsers onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} registeredUsers={registeredUsers} />;
-        case View.ADMIN_WISDOM: return <AdminWisdom onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} onSave={(w) => { setWisdom(w); setCurrentView(View.ADMIN_DASHBOARD); }} />;
-        case View.ADMIN_FORGE: return <AdminForge onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} tasks={tasks} onUpdateTasks={setTasks} />;
-        case View.ADMIN_CALENDAR: return <AdminCalendar onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} onAdd={(ev) => { setEvents(prev => [...prev, ev]); setCurrentView(View.ADMIN_DASHBOARD); }} />;
+        case View.ADMIN_WISDOM: return <AdminWisdom onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} onSave={(w) => { setWisdom(w); setCurrentView(View.ADMIN_DASHBOARD); handleNotify("Nova Sabedoria do Dia revelada.", "spa"); }} />;
+        case View.ADMIN_FORGE: return <AdminForge onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} tasks={tasks} onUpdateTasks={setTasks} onNotify={() => handleNotify("Nova Missão forjada pelos Guardiões.", "task")} />;
+        case View.ADMIN_CALENDAR: return <AdminCalendar onBack={() => setCurrentView(View.ADMIN_DASHBOARD)} onAdd={(ev) => { setEvents(prev => [...prev, ev]); setCurrentView(View.ADMIN_DASHBOARD); handleNotify(`Novo Portal Temporal aberto: ${ev.title}`, "event"); }} />;
         default: return <AdminDashboard setView={setCurrentView} totalGratitude={gratitudePosts.length} onLogout={() => setIsLogoutModalOpen(true)} user={user} />;
       }
     }
@@ -544,25 +543,30 @@ const App: React.FC = () => {
   const mainViews = [View.DASHBOARD, View.CALENDAR, View.RANKING, View.ACHIEVEMENTS, View.GRATITUDE, View.JOURNEY, View.MESSAGES];
   const showNavbar = isAuthenticated && user.role !== 'Admin' && mainViews.includes(currentView);
 
-  return (
-    <div className="min-h-screen bg-deep-void text-text-primary font-sans antialiased overflow-x-hidden">
-      <div className="max-w-screen-2xl mx-auto relative h-full min-h-screen">
-        {renderView()}
-        {showNavbar && <Navbar activeView={currentView} setView={setCurrentView} />}
-        {isLogoutModalOpen && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center px-6">
-            <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setIsLogoutModalOpen(false)}></div>
-            <div className="relative glass-panel !bg-slate-900/95 border-aurora-orange/40 w-full max-w-sm p-8 rounded-[40px] shadow-2xl flex flex-col items-center text-center animate-slide-up border-2">
-              <span className="material-symbols-outlined text-aurora-orange text-5xl mb-4">logout</span>
-              <h3 className="text-xl font-black uppercase text-white mb-2">Interromper Jornada?</h3>
-              <button onClick={() => { setIsAuthenticated(false); localStorage.removeItem('triuno_auth'); setCurrentView(View.WELCOME); setIsLogoutModalOpen(false); }} className="w-full py-4 rounded-2xl bg-aurora-orange text-white font-black uppercase tracking-widest mt-4 shadow-glow-orange">Sim, Sair</button>
-              <button onClick={() => setIsLogoutModalOpen(false)} className="w-full py-4 rounded-2xl bg-white/5 text-text-secondary font-black uppercase tracking-widest mt-2">Permanecer</button>
-            </div>
+}
+  };
+
+const unreadMessagesCount = messages.filter(m => m.receiverId === user.id && !m.read).length;
+
+return (
+  <div className="min-h-screen bg-deep-void text-text-primary font-sans antialiased overflow-x-hidden">
+    <div className="max-w-screen-2xl mx-auto relative h-full min-h-screen">
+      {renderView()}
+      {showNavbar && <Navbar activeView={currentView} setView={setCurrentView} unreadMessages={unreadMessagesCount} />}
+      {isLogoutModalOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-6">
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setIsLogoutModalOpen(false)}></div>
+          <div className="relative glass-panel !bg-slate-900/95 border-aurora-orange/40 w-full max-w-sm p-8 rounded-[40px] shadow-2xl flex flex-col items-center text-center animate-slide-up border-2">
+            <span className="material-symbols-outlined text-aurora-orange text-5xl mb-4">logout</span>
+            <h3 className="text-xl font-black uppercase text-white mb-2">Interromper Jornada?</h3>
+            <button onClick={() => { setIsAuthenticated(false); localStorage.removeItem('triuno_auth'); setCurrentView(View.WELCOME); setIsLogoutModalOpen(false); }} className="w-full py-4 rounded-2xl bg-aurora-orange text-white font-black uppercase tracking-widest mt-4 shadow-glow-orange">Sim, Sair</button>
+            <button onClick={() => setIsLogoutModalOpen(false)} className="w-full py-4 rounded-2xl bg-white/5 text-text-secondary font-black uppercase tracking-widest mt-2">Permanecer</button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 };
 
 export default App;
